@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { Loader } from "lucide-react";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRegister } from "@/apis/auth-api";
+import PATHS from "@/lib/paths";
+import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
   firstName: z.string({
@@ -41,9 +46,23 @@ export const RegisterForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
+  const register = useRegister();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    register.mutate(values, {
+      onSuccess: () => {
+        navigate(PATHS.login);
+      },
+      onError: (error) => {
+        toast({
+          title: "Register User",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
@@ -119,7 +138,8 @@ export const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={register.isPending}>
+          {register.isPending && <Loader className="w-4 h-4 mr-2" />}
           Register
         </Button>
       </form>
