@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import App from "./App.tsx";
+import RegisterPage from "./components/pages/register-page.tsx";
 import PATHS from "./lib/paths.ts";
 
 import "./index.css";
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
     path: PATHS.register,
-    element: <h1>Register Page</h1>,
+    element: <RegisterPage />,
   },
   {
     path: PATHS.login,
