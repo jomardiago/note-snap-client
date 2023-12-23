@@ -55,6 +55,15 @@ const updateNote = ({
     });
 };
 
+const deleteNote = (id: string): Promise<MessageResponse> => {
+  return api
+    .delete(`/notes/${id}`, getApiHeaders())
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error.response.data;
+    });
+};
+
 export const useGetNotes = (userId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.byUser(userId),
@@ -83,6 +92,22 @@ export const useUpdateNote = (userId: string | undefined) => {
 
   return useMutation({
     mutationFn: updateNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.byUser(userId),
+      });
+    },
+    onError: (error: MessageResponse) => {
+      return error;
+    },
+  });
+};
+
+export const useDeleteNote = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteNote,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.byUser(userId),
