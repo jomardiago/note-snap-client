@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api, { getApiHeaders } from "./api";
+import { MessageResponse } from "./types";
 
 export type Note = {
   id: string;
@@ -10,6 +11,8 @@ export type Note = {
   updatedAt: string;
   userId: string;
 };
+
+export type CreateNoteData = Pick<Note, "title" | "description">;
 
 const queryKeys = {
   root: ["notes"],
@@ -25,9 +28,34 @@ const getNotes = (): Promise<Array<Note>> => {
     });
 };
 
+const createNote = (data: CreateNoteData): Promise<MessageResponse> => {
+  return api
+    .post("/notes", data, getApiHeaders())
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error.response.data;
+    });
+};
+
 export const useGetNotes = (userId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.byUser(userId),
     queryFn: getNotes,
+  });
+};
+
+export const useCreateNote = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.byUser(userId),
+      });
+    },
+    onError: (error: MessageResponse) => {
+      return error;
+    },
   });
 };

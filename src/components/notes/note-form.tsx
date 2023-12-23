@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
+import { useCreateNote } from "@/apis/notes-api";
+import useSessionStore from "@/stores/session-store";
+import { useToast } from "../ui/use-toast";
 
 type Props = {
   onClose: () => void;
@@ -32,9 +35,26 @@ export const NoteForm = ({ onClose }: Props) => {
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
+  const { session } = useSessionStore();
+  const createNote = useCreateNote(session?.id);
+  const { toast } = useToast();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    createNote.mutate(values, {
+      onSuccess: () => {
+        form.reset({
+          title: "",
+          description: "",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Create Note",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
@@ -82,7 +102,7 @@ export const NoteForm = ({ onClose }: Props) => {
             className="w-full"
             onClick={onClose}
           >
-            Cancel
+            Close
           </Button>
           <Button type="submit" className="w-full">
             Save
