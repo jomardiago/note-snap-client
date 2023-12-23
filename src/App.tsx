@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useGetNotes } from "./apis/notes-api";
+import { Note, useGetNotes } from "./apis/notes-api";
 import MainLayout from "./components/layouts/main-layout";
 import { Button } from "./components/ui/button";
 import useSessionStore from "./stores/session-store";
@@ -11,6 +11,13 @@ export default function App() {
   const { session } = useSessionStore();
   const notes = useGetNotes(session?.id);
   const [showNoteForm, setShowNoteForm] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | undefined>(undefined);
+
+  const editNote = (id: string) => {
+    const note = notes.data!.find((note) => note.id === id);
+    setSelectedNote(note);
+    setShowNoteForm(true);
+  };
 
   return (
     <MainLayout>
@@ -25,11 +32,14 @@ export default function App() {
       <div className="grid grid-cols-4 gap-8 mt-4">
         {showNoteForm && (
           <div className="border shadow-md p-4 min-h-[200px]">
-            <NoteForm onClose={() => setShowNoteForm(false)} />
+            <NoteForm
+              onClose={() => setShowNoteForm(false)}
+              note={selectedNote}
+            />
           </div>
         )}
 
-        <NotesList notes={notes.data || []} />
+        <NotesList notes={notes.data || []} editNote={editNote} />
       </div>
     </MainLayout>
   );

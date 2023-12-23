@@ -13,12 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
-import { useCreateNote } from "@/apis/notes-api";
+import { Note, useCreateNote, useUpdateNote } from "@/apis/notes-api";
 import useSessionStore from "@/stores/session-store";
 import { useToast } from "../ui/use-toast";
 
 type Props = {
   onClose: () => void;
+  note?: Note;
 };
 
 const formSchema = z.object({
@@ -30,31 +31,53 @@ const formSchema = z.object({
   }),
 });
 
-export const NoteForm = ({ onClose }: Props) => {
+export const NoteForm = ({ onClose, note }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      title: note?.title || undefined,
+      description: note?.description || undefined,
+    },
   });
   const { session } = useSessionStore();
   const createNote = useCreateNote(session?.id);
+  const updateNote = useUpdateNote(session?.id);
   const { toast } = useToast();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createNote.mutate(values, {
-      onSuccess: () => {
-        form.reset({
-          title: "",
-          description: "",
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Create Note",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
+    if (!note) {
+      createNote.mutate(values, {
+        onSuccess: () => {
+          form.reset({
+            title: "",
+            description: "",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Create Note",
+            description: error.message,
+            variant: "destructive",
+          });
+        },
+      });
+    } else {
+      updateNote.mutate(
+        { id: note.id, data: values },
+        {
+          onSuccess: () => {
+            onClose();
+          },
+          onError: (error) => {
+            toast({
+              title: "Update Note",
+              description: error.message,
+              variant: "destructive",
+            });
+          },
+        },
+      );
+    }
   };
 
   return (

@@ -13,6 +13,12 @@ export type Note = {
 };
 
 export type CreateNoteData = Pick<Note, "title" | "description">;
+export type UpdateNoteData = CreateNoteData;
+
+export type UpdateNoteParams = {
+  id: string;
+  data: UpdateNoteData;
+};
 
 const queryKeys = {
   root: ["notes"],
@@ -37,6 +43,18 @@ const createNote = (data: CreateNoteData): Promise<MessageResponse> => {
     });
 };
 
+const updateNote = ({
+  id,
+  data,
+}: UpdateNoteParams): Promise<MessageResponse> => {
+  return api
+    .patch(`/notes/${id}`, data, getApiHeaders())
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error.response.data;
+    });
+};
+
 export const useGetNotes = (userId: string | undefined) => {
   return useQuery({
     queryKey: queryKeys.byUser(userId),
@@ -49,6 +67,22 @@ export const useCreateNote = (userId: string | undefined) => {
 
   return useMutation({
     mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.byUser(userId),
+      });
+    },
+    onError: (error: MessageResponse) => {
+      return error;
+    },
+  });
+};
+
+export const useUpdateNote = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateNote,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.byUser(userId),

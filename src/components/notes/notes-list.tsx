@@ -3,9 +3,10 @@ import { Edit, X } from "lucide-react";
 
 type Props = {
   notes: Array<Note>;
+  editNote: (id: string) => void;
 };
 
-export const NotesList = ({ notes }: Props) => {
+export const NotesList = ({ notes, editNote }: Props) => {
   return (
     <>
       {notes.map((note) => (
@@ -16,7 +17,10 @@ export const NotesList = ({ notes }: Props) => {
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">{note.title}</h2>
             <button>
-              <Edit className="w-4 h-4 text-yellow-500" />
+              <Edit
+                className="w-4 h-4 text-yellow-500"
+                onClick={() => editNote(note.id)}
+              />
             </button>
           </div>
           <p className="text-gray-700 mt-4">{note.description}</p>
