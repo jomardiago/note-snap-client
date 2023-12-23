@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useLogin } from "@/apis/auth-api";
+import PATHS from "@/lib/paths";
+import { useToast } from "../ui/use-toast";
+import useSessionStore from "@/stores/session-store";
 
 const formSchema = z.object({
   email: z
@@ -35,9 +40,25 @@ export const LoginForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {},
   });
+  const login = useLogin();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { setSession } = useSessionStore();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    login.mutate(values, {
+      onSuccess: (data) => {
+        setSession(data);
+        navigate(PATHS.root);
+      },
+      onError: (error) => {
+        toast({
+          title: "Login User",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
