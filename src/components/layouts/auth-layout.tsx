@@ -1,4 +1,8 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import useSessionStore from "@/stores/session-store";
+import PATHS from "@/lib/paths";
 
 type Props = {
   children: React.ReactNode;
@@ -15,6 +19,15 @@ export default function AuthLayout({
   footerPath,
   footerText,
 }: Props) {
+  const { session } = useSessionStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (session) {
+      navigate(PATHS.root);
+    }
+  }, [session, navigate]);
+
   return (
     <div className="bg-gray-100 min-h-screen flex justify-center items-center">
       <div className="bg-white w-[500px] p-8 space-y-4">
