@@ -1,7 +1,9 @@
+import MainLayout from "./components/layouts/main-layout";
+
 export default function App() {
   return (
-    <div>
-      <h1>NoteSnap</h1>
-    </div>
+    <MainLayout>
+      <h1>Notes</h1>
+    </MainLayout>
   );
 }
