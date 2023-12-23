@@ -1,14 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./App.tsx";
-import RegisterPage from "./components/pages/register-page.tsx";
+import RegisterPage from "./components/pages/register-page/register-page.tsx";
+import LoginPage from "./components/pages/login-page/login-page.tsx";
+
 import { Toaster } from "@/components/ui/toaster";
 import PATHS from "./lib/paths.ts";
 
 import "./index.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path: PATHS.login,
-    element: <h1>Login Page</h1>,
+    element: <LoginPage />,
   },
 ]);
 
