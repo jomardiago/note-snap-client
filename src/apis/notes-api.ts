@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import api, { getApiHeaders } from "./api";
 
-type Note = {
+export type Note = {
   id: string;
   title: string;
   description: string;

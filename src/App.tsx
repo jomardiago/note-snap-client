@@ -4,6 +4,8 @@ import { useGetNotes } from "./apis/notes-api";
 import MainLayout from "./components/layouts/main-layout";
 import { Button } from "./components/ui/button";
 import useSessionStore from "./stores/session-store";
+import { NotesList } from "./components/notes/notes-list";
+import { NoteForm } from "./components/notes/note-form";
 
 export default function App() {
   const { session } = useSessionStore();
@@ -23,17 +25,11 @@ export default function App() {
       <div className="grid grid-cols-4 gap-8 mt-4">
         {showNoteForm && (
           <div className="border shadow-md p-4 min-h-[200px]">
-            <span>Note Form</span>
+            <NoteForm onClose={() => setShowNoteForm(false)} />
           </div>
         )}
 
-        {notes.data &&
-          notes.data.map((note) => (
-            <div className="border shadow-md p-4 min-h-[200px]">
-              <h2 className="text-lg font-semibold">{note.title}</h2>
-              <p className="text-gray-700 mt-4">{note.description}</p>
-            </div>
-          ))}
+        <NotesList notes={notes.data || []} />
       </div>
     </MainLayout>
   );
