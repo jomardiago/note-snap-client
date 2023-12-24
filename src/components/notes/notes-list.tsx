@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Edit, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { Note } from "@/apis/notes-api";
 import { DeleteNoteDialog } from "./delete-note-dialog";
+import { NoteItem } from "./note-item";
 
 type Props = {
   notes: Array<Note>;
-  editNote: (id: string) => void;
 };
 
 type DeleteNoteState = {
@@ -14,7 +14,7 @@ type DeleteNoteState = {
   note: Note | undefined;
 };
 
-export const NotesList = ({ notes, editNote }: Props) => {
+export const NotesList = ({ notes }: Props) => {
   const [deleteNoteState, setDeleteNoteState] = useState<DeleteNoteState>({
     open: false,
     note: undefined,
@@ -39,16 +39,8 @@ export const NotesList = ({ notes, editNote }: Props) => {
           >
             <X className="w-4 h-4 text-red-700" />
           </button>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">{note.title}</h2>
-            <button>
-              <Edit
-                className="w-4 h-4 text-yellow-500"
-                onClick={() => editNote(note.id)}
-              />
-            </button>
-          </div>
-          <p className="text-gray-700 mt-4">{note.description}</p>
+
+          <NoteItem note={note} />
         </div>
       ))}
     </>
