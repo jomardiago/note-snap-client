@@ -29,7 +29,10 @@ export const NotesList = ({ notes, editNote }: Props) => {
       />
 
       {notes.map((note) => (
-        <div className="border shadow-md p-4 min-h-[200px] relative">
+        <div
+          key={note.id}
+          className="border shadow-md p-4 min-h-[200px] relative"
+        >
           <button
             className="absolute top-0 right-0 p-2"
             onClick={() => setDeleteNoteState({ open: true, note })}
