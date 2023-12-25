@@ -23,6 +23,9 @@ const formSchema = z.object({
     .string({
       required_error: "Email is required",
     })
+    .min(1, {
+      message: "Email is required",
+    })
     .email({
       message: "Invalid email",
     }),
@@ -38,7 +41,10 @@ const formSchema = z.object({
 export const LoginForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
   const login = useLogin();
   const navigate = useNavigate();
