@@ -94,13 +94,16 @@ describe("Login Page", () => {
 
     render(<LoginPage />);
 
+    const setSession = useSessionStore.getState().setSession;
+    setSession(undefined);
+
     const registerLink = screen.getByRole("link", {
       name: /need a new account\? register instead\./i,
     });
     await userEvent.click(registerLink);
 
-    // TODO: Invenstigate why this test is failing, almost the same with register test but register is passing
+    // TODO: Investigate why this test is failing, almost the same with register test but register is passing
     // and this one is failing.
-    // await waitFor(() => expect(window.location.href).toContain("/register"));
+    await waitFor(() => expect(window.location.href).toContain("/register"));
   });
 });
