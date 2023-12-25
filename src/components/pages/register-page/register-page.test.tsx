@@ -59,7 +59,9 @@ describe("Register Page", () => {
     const emailInputErrorMessage = screen.getByText(/email is required/i);
     expect(emailInputErrorMessage).toBeInTheDocument();
 
-    const passwordInputErrorMessage = screen.getByText(/password is required/i);
+    const passwordInputErrorMessage = screen.getByText(
+      /password must be atleast 8 characters/i,
+    );
     expect(passwordInputErrorMessage).toBeInTheDocument();
   });
 

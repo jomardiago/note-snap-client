@@ -19,15 +19,26 @@ import PATHS from "@/lib/paths";
 import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
-  firstName: z.string({
-    required_error: "First name is required",
-  }),
-  lastName: z.string({
-    required_error: "Last name is required",
-  }),
+  firstName: z
+    .string({
+      required_error: "First name is required",
+    })
+    .min(1, {
+      message: "First name is required",
+    }),
+  lastName: z
+    .string({
+      required_error: "Last name is required",
+    })
+    .min(1, {
+      message: "Last name is required",
+    }),
   email: z
     .string({
       required_error: "Email is required",
+    })
+    .min(1, {
+      message: "Email is required",
     })
     .email({
       message: "Invalid email",
@@ -44,7 +55,12 @@ const formSchema = z.object({
 export const RegisterForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
   });
   const register = useRegister();
   const navigate = useNavigate();
