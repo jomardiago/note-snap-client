@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { render, screen, waitFor } from "./tests/test-utils";
-import App from "./App";
-import useSessionStore from "./stores/session-store";
-import { LOGIN_RESPONSE } from "./tests/dummy-data";
+import MainPage from "./main-page";
+import useSessionStore from "@/stores/session-store";
+import { render, screen, waitFor } from "@/tests/test-utils";
+import { LOGIN_RESPONSE } from "@/tests/dummy-data";
 
 describe("Main Page", () => {
   it("renders the component correctly", async () => {
     const setSession = useSessionStore.getState().setSession;
 
-    render(<App />);
+    render(<MainPage />);
     setSession(LOGIN_RESPONSE);
 
     const loading = screen.getByText(/loading/i);
