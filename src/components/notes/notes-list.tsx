@@ -36,6 +36,8 @@ export const NotesList = ({ notes }: Props) => {
           <button
             className="absolute top-0 right-0 p-2"
             onClick={() => setDeleteNoteState({ open: true, note })}
+            aria-label="Delete Note"
+            data-testid="delete-note-button"
           >
             <X className="w-4 h-4 text-red-700" />
           </button>

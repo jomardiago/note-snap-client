@@ -21,6 +21,8 @@ export const NoteItem = ({ note }: Props) => {
               <Edit
                 className="w-4 h-4 text-yellow-500"
                 onClick={() => setIsEditing(true)}
+                aria-label="Edit Note"
+                data-testid="edit-note-button"
               />
             </button>
           </div>
