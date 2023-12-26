@@ -20,4 +20,10 @@ export const handlers = [
       status: 200,
     });
   }),
+
+  http.post("*/notes", () => {
+    return HttpResponse.json({
+      message: "Note created.",
+    });
+  }),
 ];

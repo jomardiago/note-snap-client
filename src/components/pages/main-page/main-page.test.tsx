@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { HttpResponse, http } from "msw";
 
 import MainPage from "./main-page";
 import useSessionStore from "@/stores/session-store";
 import { render, screen, userEvent, waitFor } from "@/tests/test-utils";
-import { LOGIN_RESPONSE } from "@/tests/dummy-data";
+import { LOGIN_RESPONSE, NOTES } from "@/tests/dummy-data";
+import { server } from "@/tests/server";
 
 describe("Main Page", () => {
   const setSession = useSessionStore.getState().setSession;
@@ -92,4 +94,88 @@ describe("Main Page", () => {
     const saveButton = screen.queryByRole("button", { name: /save/i });
     expect(saveButton).not.toBeInTheDocument();
   });
+
+  it("creates a new note successfully", async () => {
+    userEvent.setup();
+
+    render(<MainPage />);
+
+    const title = "New Note";
+    const description = "New Note Description";
+
+    const newNoteButton = screen.getByRole("button", { name: /new note/i });
+    await userEvent.click(newNoteButton);
+
+    const titleInput = screen.getByRole("textbox", { name: /title/i });
+    await userEvent.type(titleInput, title);
+    expect(titleInput).toHaveValue(title);
+
+    const descriptionInput = screen.getByRole("textbox", {
+      name: /description/i,
+    });
+    await userEvent.type(descriptionInput, description);
+    expect(descriptionInput).toHaveValue(description);
+
+    server.use(
+      http.get("*/notes", () => {
+        return HttpResponse.json([...NOTES, { title, description }], {
+          status: 200,
+        });
+      }),
+    );
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(saveButton);
+
+    expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+    expect(screen.getByText(description)).toBeInTheDocument();
+  });
+
+  it("displays the error when create note throws an error", async () => {
+    server.use(
+      http.post("*/notes", () => {
+        return HttpResponse.json(
+          {
+            message: "Internal Server Error",
+          },
+          { status: 500 },
+        );
+      }),
+    );
+
+    userEvent.setup();
+
+    render(<MainPage />);
+
+    const title = "New Note";
+    const description = "New Note Description";
+
+    const newNoteButton = screen.getByRole("button", { name: /new note/i });
+    await userEvent.click(newNoteButton);
+
+    const titleInput = screen.getByRole("textbox", { name: /title/i });
+    await userEvent.type(titleInput, title);
+
+    const descriptionInput = screen.getByRole("textbox", {
+      name: /description/i,
+    });
+    await userEvent.type(descriptionInput, description);
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(saveButton);
+
+    const errorToastTitle = screen.getByText(/create note/i);
+    expect(errorToastTitle).toBeInTheDocument();
+
+    const errorToastDescription = screen.getByText(/internal server error/i);
+    expect(errorToastDescription).toBeInTheDocument();
+  });
+
+  // Test Update Note as Success
+
+  // Test Update Note as Error
+
+  // Test Delete Note as Success
+
+  // Test Delete Note as Error
 });
