@@ -41,7 +41,9 @@ describe("Main Page", () => {
     const titleInput = screen.getByRole("textbox", { name: /title/i });
     expect(titleInput).toBeInTheDocument();
 
-    const descriptionInput = screen.getByRole("textbox", { name: /password/i });
+    const descriptionInput = screen.getByRole("textbox", {
+      name: /description/i,
+    });
     expect(descriptionInput).toBeInTheDocument();
 
     const closeButton = screen.getByRole("button", { name: /close/i });
@@ -49,5 +51,45 @@ describe("Main Page", () => {
 
     const saveButton = screen.getByRole("button", { name: /save/i });
     expect(saveButton).toBeInTheDocument();
+  });
+
+  it("should display the correct error messages when form is submitted with invalid values", async () => {
+    userEvent.setup();
+
+    render(<MainPage />);
+
+    const newNoteButton = screen.getByRole("button", { name: /new note/i });
+    await userEvent.click(newNoteButton);
+
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    await userEvent.click(saveButton);
+
+    expect(screen.getByText(/title is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/description is required/i)).toBeInTheDocument();
+  });
+
+  it("should hide the note form when close button is clicked", async () => {
+    userEvent.setup();
+
+    render(<MainPage />);
+
+    const newNoteButton = screen.getByRole("button", { name: /new note/i });
+    await userEvent.click(newNoteButton);
+
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    await userEvent.click(closeButton);
+
+    const titleInput = screen.queryByRole("textbox", { name: /title/i });
+    expect(titleInput).not.toBeInTheDocument();
+
+    const descriptionInput = screen.queryByRole("textbox", {
+      name: /description/i,
+    });
+    expect(descriptionInput).not.toBeInTheDocument();
+
+    expect(closeButton).not.toBeInTheDocument();
+
+    const saveButton = screen.queryByRole("button", { name: /save/i });
+    expect(saveButton).not.toBeInTheDocument();
   });
 });

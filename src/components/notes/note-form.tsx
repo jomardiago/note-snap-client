@@ -23,20 +23,28 @@ type Props = {
 };
 
 const formSchema = z.object({
-  title: z.string({
-    required_error: "Title is required",
-  }),
-  description: z.string({
-    required_error: "Description is required",
-  }),
+  title: z
+    .string({
+      required_error: "Title is required",
+    })
+    .min(1, {
+      message: "Title is required",
+    }),
+  description: z
+    .string({
+      required_error: "Description is required",
+    })
+    .min(1, {
+      message: "Description is required",
+    }),
 });
 
 export const NoteForm = ({ onClose, note }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: note?.title || undefined,
-      description: note?.description || undefined,
+      title: note?.title || "",
+      description: note?.description || "",
     },
   });
   const { session } = useSessionStore();
@@ -105,7 +113,7 @@ export const NoteForm = ({ onClose, note }: Props) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Enter Description"
